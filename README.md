@@ -179,17 +179,6 @@ The server will start on `http://localhost:4002`. You should see console message
     POST /api/send-daily-comic
     \`\`\`
 
-## ☁️ Deployment
-
-This application can be deployed to various cloud platforms that support Node.js applications, such as Render, Railway, or a custom VPS (e.g., DigitalOcean Droplets, AWS EC2).
-
-### General Deployment Steps:
-
-1.  **Choose a Cloud Provider**: Select a platform like Render, Railway, or a VPS provider.
-2.  **Configure Environment Variables**: On your chosen platform, you will need to set the environment variables (`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM`) that your application uses. These are crucial for connecting to Upstash Redis and sending emails.
-3.  **Build and Run**: Follow your platform's specific instructions to deploy a Node.js application. This usually involves connecting your Git repository and configuring a build command (`npm install`) and a start command (`npm start`).
-4.  **Update Frontend URL**: Once your backend is deployed and has a public URL (e.g., `https://your-app.render.com`), you will need to update the `fetch` URL in your `backend/public/index.html` to point to this new backend URL. If your frontend is served from the same domain as your backend (which is common for Express apps serving static files), you can continue to use relative paths like `/api/subscribe`.
-
 ---
 
 If you find this project useful, please consider giving it a star ⭐ on GitHub! Your support is greatly appreciated.
