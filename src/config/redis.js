@@ -1,29 +1,41 @@
-// import Redis from "ioredis"
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 import { Redis as UpstashRedis } from "@upstash/redis";
+import Redis from "ioredis"; // Keep this import if you need fallback
 
-dotenv.config({ path: "./config.env" })
+dotenv.config({ path: "./config.env" });
 
-// export const redis = new Redis({
-//   host: process.env.REDIS_HOST || "localhost",
-//   port: Number.parseInt(process.env.REDIS_PORT) || 6379,
-//   maxRetriesPerRequest: null,
-//   enableReadyCheck: false,
-//   retryDelayOnFailover: 100,
-//   lazyConnect: true,
-// })
+// Determine which Redis client to use based on environment
+export let redis;
 
-// redis.on("connect", () => {
-//   console.log("✅ Redis connected successfully")
-// })
+if (process.env.UPSTASH_REDIS === "true") {
+  // Upstash Redis configuration
+  if (!process.env.REDIS_URL || !process.env.REDIS_TOKEN) {
+    throw new Error("Upstash Redis requires REDIS_URL and REDIS_TOKEN environment variables");
+  }
 
-export let redis = new UpstashRedis({
+  redis = new UpstashRedis({
     url: process.env.REDIS_URL,
     token: process.env.REDIS_TOKEN,
   });
-//    redis.on("connect", () => {
-//     console.log("✅ Local Redis connected successfully");
-//   });
-// redis.on("error", (err) => {
-//   console.error("❌ Redis connection error:", err)
-// })
+
+  console.log("✅ Using Upstash Redis");
+} else {
+  // Local/ioredis configuration
+  redis = new Redis({
+    host: process.env.REDIS_HOST || "localhost",
+    port: Number.parseInt(process.env.REDIS_PORT) || 6379,
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+    retryDelayOnFailover: 100,
+    lazyConnect: true,
+  });
+
+  // Add event listeners for local Redis
+  redis.on("connect", () => {
+    console.log("✅ Local Redis connected successfully");
+  });
+
+  redis.on("error", (err) => {
+    console.error("❌ Local Redis connection error:", err);
+  });
+}
