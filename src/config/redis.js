@@ -1,16 +1,28 @@
 import dotenv from "dotenv";
 import { Redis as UpstashRedis } from "@upstash/redis";
-import Redis from "ioredis"; // Keep this import if you need fallback
+import Redis from "ioredis";
 
 dotenv.config({ path: "./config.env" });
 
-// Determine which Redis client to use based on environment
+// Force Upstash Redis for production/deployment
 export let redis;
-console.log("redis url" , process.env.REDIS_URL);
-if (process.env.UPSTASH_REDIS === "true") {
+
+// Debug logging
+console.log("🔍 Redis Configuration:");
+console.log("REDIS_URL:", process.env.REDIS_URL ? "✅ Set" : "❌ Missing");
+console.log("REDIS_TOKEN:", process.env.REDIS_TOKEN ? "✅ Set" : "❌ Missing");
+console.log("UPSTASH_REDIS:", process.env.UPSTASH_REDIS);
+
+// Check if we're in production or have Upstash URL
+const hasUpstashUrl = process.env.REDIS_URL && process.env.REDIS_URL.includes("upstash.io");
+const useUpstash = process.env.UPSTASH_REDIS === "true" || hasUpstashUrl;
+
+if (useUpstash) {
   // Upstash Redis configuration
   if (!process.env.REDIS_URL || !process.env.REDIS_TOKEN) {
-    throw new Error("Upstash Redis requires REDIS_URL and REDIS_TOKEN environment variables");
+    console.error("❌ Missing Upstash Redis configuration!");
+    console.error("Required: REDIS_URL and REDIS_TOKEN environment variables");
+    throw new Error("Upstash Redis configuration missing");
   }
 
   redis = new UpstashRedis({
@@ -20,7 +32,8 @@ if (process.env.UPSTASH_REDIS === "true") {
 
   console.log("✅ Using Upstash Redis");
 } else {
-  // Local/ioredis configuration
+  // Local Redis configuration (development only)
+  console.warn("⚠️ Using local Redis - not recommended for production");
   redis = new Redis({
     host: process.env.REDIS_HOST || "localhost",
     port: Number.parseInt(process.env.REDIS_PORT) || 6379,
@@ -30,7 +43,6 @@ if (process.env.UPSTASH_REDIS === "true") {
     lazyConnect: true,
   });
 
-  // Add event listeners for local Redis
   redis.on("connect", () => {
     console.log("✅ Local Redis connected successfully");
   });
