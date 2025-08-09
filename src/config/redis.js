@@ -6,7 +6,7 @@ dotenv.config({ path: "./config.env" });
 
 // Determine which Redis client to use based on environment
 export let redis;
-
+console.log("redis url" , process.env.REDIS_URL);
 if (process.env.UPSTASH_REDIS === "true") {
   // Upstash Redis configuration
   if (!process.env.REDIS_URL || !process.env.REDIS_TOKEN) {
