@@ -1,0 +1,25 @@
+{
+  "name": "expressjs",
+  "version": "1.0.0",
+  "description": "Express practice ",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "Syed Tarique abedin",
+  "license": "ISC",
+  "dependencies": {
+    "@upstash/redis": "^1.35.3",
+    "axios": "^1.11.0",
+    "bullmq": "^5.56.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "ioredis": "^5.7.0",
+    "mongoose": "^8.7.2",
+    "nodemailer": "^7.0.5",
+    "nodemon": "^3.1.7"
+  }
+}

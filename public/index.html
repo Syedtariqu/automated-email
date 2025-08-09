@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe to Daily XKCD</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        input[type="email"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Subscribe to Daily XKCD Comics!</h1>
+        <p>Enter your email to receive a new XKCD comic in your inbox every day at 8 PM.</p>
+        <form id="subscribeForm">
+            <input type="email" id="email" placeholder="your.email@example.com" required>
+            <button type="submit">Subscribe</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('subscribeForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+            
+            const emailInput = document.getElementById('email');
+            const messageDiv = document.getElementById('message');
+            const email = emailInput.value;
+
+            messageDiv.textContent = 'Subscribing...';
+            messageDiv.className = ''; // Clear previous classes
+
+            try {
+                // IMPORTANT: Replace with your actual backend URL when deployed
+                // For local testing, if your backend is on 4002, use http://localhost:4002
+                // const backendUrl = 'http://localhost:4002'; 
+                const backendUrl = 'https://automated-email-mu.vercel.app';
+
+                
+                const response = await fetch(`/api/subscribe`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'success';
+                    emailInput.value = ''; // Clear input on success
+                } else {
+                    messageDiv.textContent = data.error || 'An unknown error occurred.';
+                    messageDiv.className = 'error';
+                }
+            } catch (error) {
+                console.error('Error during subscription:', error);
+                messageDiv.textContent = 'Failed to connect to the server. Please try again later.';
+                messageDiv.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>
